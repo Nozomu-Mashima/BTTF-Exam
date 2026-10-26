@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BTTF検定 合格までの88マイル</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="バック・トゥ・ザ・フューチャー検定の対策アプリ。年表・用語集121語・クイズ150問。">
+<!-- アプリ化（PWA）の設定：ホーム画面に追加したときの名前・アイコン・色 -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#14171c">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="88マイル">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=DotGothic16&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap">
+<style>
+/* レイアウト：上部にロゴ風のグラデーション帯とタブ、1カラムの読み物。
+   落ち着いた明るいグレーを基調に、映画ロゴの色（黄→オレンジ→赤）はヘッダー下の細い帯だけに使う。
+   年表の日付はタイムサーキット風の黒いパネルで見せる */
+:root {
+  --bg: #f2f4f7;          /* 少し青みのある明るいグレー */
+  --surface: #ffffff;
+  --ink: #1f2433;         /* 濃い紺グレー */
+  --muted: #5d6475;
+  --line: #dde1e8;
+  --accent: #e8590c;      /* 炎のオレンジ */
+  --accent-ink: #ffffff;
+  --sun: #f5b400;         /* ロゴの黄色 */
+  --logo-1: #ffd23f;      /* ヘッダーのグラデーション */
+  --logo-2: #ff8a00;
+  --logo-3: #ff3d2e;
+  --ok: #2b8a3e;
+  --ng: #c92a2a;
+  --panel: #14171c;       /* タイムサーキットの筐体（両テーマ共通で暗い） */
+  --led-red: #ff4d3d;
+  --led-green: #3ddc6b;
+  --led-amber: #ffb02e;
+  --led-gray: #9aa3ad;
+  --film1: #d6453d;       /* 作品ごとの色（PART1＝赤、PART2＝緑、PART3＝黄、現実＝灰） */
+  --film2: #2b8a3e;
+  --film3: #c27803;
+  --film-real: #7a8090;
+  --font-display: "Dela Gothic One", "Hiragino Sans", "Yu Gothic", sans-serif;
+  --font-body: "Zen Kaku Gothic New", "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
+  --font-led: "DotGothic16", "Courier New", monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16191f; --surface: #1f232b; --ink: #e9ecf1; --muted: #9aa2b1;
+    --line: #2e333d; --accent: #ff8a4c; --accent-ink: #16191f; --sun: #f5c542;
+    --ok: #51cf66; --ng: #ff6b6b; --panel: #0b0d10;
+    --film1: #ff7b72; --film2: #56d364; --film3: #f2b84b; --film-real: #9aa2b1;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16191f; --surface: #1f232b; --ink: #e9ecf1; --muted: #9aa2b1;
+  --line: #2e333d; --accent: #ff8a4c; --accent-ink: #16191f; --sun: #f5c542;
+  --ok: #51cf66; --ng: #ff6b6b; --panel: #0b0d10;
+  --film1: #ff7b72; --film2: #56d364; --film3: #f2b84b; --film-real: #9aa2b1;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+/* 基本のリセット。iPhoneの画面上下の切り欠き（セーフエリア）の分だけ余白をとる */
+:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+body { margin: 0; -webkit-text-size-adjust: 100%; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 15px; line-height: 1.75;
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--panel);
+}
+.wrap {
+  max-width: 760px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+/* ヘッダー：濃い帯の下端にロゴ色の細いライン（デロリアンの炎のわだちのイメージ） */
+header.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: var(--panel); color: #fff;
+}
+header.top::after {
+  content: ""; display: block; height: 3px;
+  background: linear-gradient(90deg, var(--logo-1), var(--logo-2), var(--logo-3));
+}
+.top .wrap { display: flex; flex-direction: column; gap: 8px; padding-block: 14px 0; }
+.brand { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.brand h1 {
+  margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 1.5rem; letter-spacing: .03em;
+  display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; color: #fff;
+}
+.brand h1 .kentei { font-size: .8em; }
+/* 「88マイル特訓」をロゴの色（黄→オレンジ→赤）のグラデーションで塗る */
+.brand h1 .mph {
+  background: linear-gradient(90deg, var(--logo-1), var(--logo-2) 55%, var(--logo-3));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.brand small {
+  font-family: var(--font-led); color: var(--led-green); font-size: .75rem; letter-spacing: .08em;
+}
+nav.tabs { display: flex; gap: 4px; }
+nav.tabs button {
+  flex: 1; border: 0; background: transparent; color: #a9b0bd;
+  font: 700 .95rem var(--font-body); padding: 8px 6px 10px; cursor: pointer;
+  border-bottom: 3px solid transparent;
+}
+nav.tabs button[aria-selected="true"] { color: #fff; border-bottom-color: var(--logo-1); }
+nav.tabs button:focus-visible { outline: 2px solid var(--logo-1); outline-offset: -2px; }
+
+main { padding-block: 24px 64px; }
+h2 { font-family: var(--font-display); font-weight: 400; font-size: 1.6rem; margin: 0 0 4px; text-wrap: balance; }
+.lead { color: var(--muted); margin: 0 0 20px; }
+/* 時代の見出し：左に小さな黄色の印、右へ細い線 */
+h3.era {
+  display: flex; align-items: center; gap: 10px; margin: 32px 0 12px;
+  font-family: var(--font-display); font-weight: 400; font-size: 1.05rem;
+}
+h3.era::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--sun); }
+h3.era::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+
+/* フィルターチップ */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+.chip {
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+  border-radius: 999px; padding: 4px 14px; font: 700 .85rem var(--font-body); cursor: pointer;
+}
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.chip:focus-visible, .btn:focus-visible, .choice:focus-visible, input:focus-visible, .level:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* タイムサーキット風の日付表示
+   上段に 月・日・年、下段に時刻。時刻がない出来事は消灯した「--:--」を出して、全パネルの形をそろえる */
+.tc {
+  display: grid; grid-template-columns: repeat(3, auto); justify-content: space-between; row-gap: 4px;
+  background: var(--panel); border-radius: 6px 6px 0 0; padding: 8px 12px;
+  font-family: var(--font-led); font-variant-numeric: tabular-nums;
+  --led: var(--led-red);
+}
+.tc[data-film="2"] { --led: var(--led-green); }
+.tc[data-film="3"] { --led: var(--led-amber); }
+.tc[data-film="real"] { --led: var(--led-gray); }
+.tc .seg { display: flex; flex-direction: column; align-items: center; }
+.tc .seg b { font-weight: 400; color: var(--led); font-size: 1.15rem; line-height: 1.2; text-shadow: 0 0 6px color-mix(in srgb, var(--led) 60%, transparent); }
+.tc .seg i { font-style: normal; font-size: .58rem; color: #8a929c; letter-spacing: .12em; }
+.tc .seg.time {
+  grid-column: 1 / -1; flex-direction: row; justify-content: space-between; align-items: baseline;
+  border-top: 1px dashed #3a4049; padding-top: 4px;
+}
+.tc .seg.off b { opacity: .22; text-shadow: none; }
+
+/* 日付パネルの下の銘板。常に2行分の高さ（1行目＝日付、2行目＝時刻） */
+.when { display: grid; min-width: 0; }
+.jp {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  min-height: calc(2 * 1.4em + 8px);
+  font-size: .72rem; line-height: 1.4; font-weight: 700; color: #1f1a4d; text-align: center;
+  background: color-mix(in srgb, var(--fc) 14%, #ffffff);
+  border-radius: 0 0 6px 6px; padding: 3px 6px;
+}
+.jp .t { font-weight: 400; }
+
+/* 年表の出来事カード：上段に「日付パネル＋出来事」、下段に解説 */
+.events { display: flex; flex-direction: column; gap: 16px; }
+.event {
+  --fc: var(--film1);
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(20, 24, 33, .06); padding: 12px; display: flex; flex-direction: column; gap: 10px;
+}
+.event[data-film="2"] { --fc: var(--film2); }
+.event[data-film="3"] { --fc: var(--film3); }
+.event[data-film="real"] { --fc: var(--film-real); }
+.event .head { display: grid; grid-template-columns: 172px 1fr; gap: 14px; align-items: center; }
+.event .what { margin: 0; font-weight: 700; font-size: 1.02rem; line-height: 1.5; min-width: 0; }
+.event .detail { margin: 0; padding-top: 10px; border-top: 1px dashed var(--line); }
+.tag {
+  display: table; margin: 0 0 4px; font-size: .72rem; font-weight: 700; letter-spacing: .06em;
+  border-radius: 999px; padding: 0 10px; color: var(--fc); background: color-mix(in srgb, var(--fc) 12%, transparent);
+}
+.note { color: var(--muted); font-size: .88rem; }
+@media (max-width: 520px) {
+  .event { padding: 10px; }
+  .event .head { grid-template-columns: 132px 1fr; gap: 10px; }
+  .event .what { font-size: .92rem; }
+  .tc { padding: 6px 8px; }
+  .tc .seg b { font-size: .9rem; }
+  .tc .seg i { font-size: .5rem; }
+}
+
+/* 用語集 */
+.search {
+  width: 100%; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--line);
+  background: var(--surface); color: var(--ink); font: 1rem var(--font-body); margin-bottom: 12px;
+}
+.terms { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 14px; margin-top: 12px; }
+.term {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+  padding: 12px 14px; min-width: 0;
+}
+.term h4 { margin: 0; font-size: 1.02rem; }
+.term .en { color: var(--accent); font-size: .8rem; font-weight: 700; }
+.term p { margin: 6px 0 0; font-size: .92rem; }
+.empty { color: var(--muted); padding: 20px 0; }
+
+/* クイズ */
+.levels { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 14px; margin-top: 12px; }
+.level {
+  text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+  padding: 14px 16px; cursor: pointer; color: var(--ink); font-family: var(--font-body);
+  display: flex; flex-direction: column; gap: 4px; transition: border-color .15s;
+}
+.level:hover { border-color: var(--accent); }
+.level .name { font-family: var(--font-display); font-size: 1.2rem; }
+.level .meta { color: var(--muted); font-size: .85rem; }
+.level .best { font-family: var(--font-led); color: var(--accent); font-size: .85rem; }
+.btn {
+  border: 1px solid transparent; border-radius: 8px; background: var(--accent); color: var(--accent-ink);
+  font: 700 1rem var(--font-body); padding: 10px 20px; cursor: pointer;
+}
+.btn.ghost { background: var(--surface); color: var(--ink); border-color: var(--line); }
+.qhead { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.progress { font-family: var(--font-led); color: var(--muted); font-variant-numeric: tabular-nums; }
+.bar { height: 4px; background: var(--line); border-radius: 999px; overflow: hidden; margin-bottom: 18px; }
+.bar > div { height: 100%; background: linear-gradient(90deg, var(--logo-1), var(--logo-2), var(--logo-3)); transition: width .3s; }
+.question { font-size: 1.15rem; font-weight: 700; margin: 0 0 16px; }
+.choices { display: flex; flex-direction: column; gap: 10px; }
+.choice {
+  text-align: left; padding: 12px 16px; border-radius: 8px; border: 1px solid var(--line);
+  background: var(--surface); color: var(--ink); font: 1rem var(--font-body); cursor: pointer;
+}
+.choice:hover:not(:disabled) { border-color: var(--accent); }
+.choice:disabled { cursor: default; }
+.choice.correct { border-color: var(--ok); background: color-mix(in srgb, var(--ok) 16%, var(--surface)); }
+.choice.wrong { border-color: var(--ng); background: color-mix(in srgb, var(--ng) 14%, var(--surface)); }
+.explain { margin-top: 16px; padding: 12px 16px; border: 1px solid var(--line); background: var(--surface); border-radius: 10px; }
+.explain p { margin: 0; }
+.explain .judge { font-weight: 700; margin-bottom: 4px; }
+.explain .judge.ok { color: var(--ok); }
+.explain .judge.ng { color: var(--ng); }
+.next { margin-top: 16px; display: flex; justify-content: flex-end; }
+.result { text-align: center; padding-block: 12px; }
+.score { font-family: var(--font-led); font-size: 3rem; color: var(--accent); line-height: 1.1; }
+.review { text-align: left; margin-top: 8px; display: flex; flex-direction: column; gap: 10px; }
+.review .item { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; }
+.review .item p { margin: 0; }
+.row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
+
+@media (prefers-reduced-motion: reduce) { .bar > div, .level { transition: none; } }
+</style>
+
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <h1><span class="kentei">BTTF検定</span><span class="mph">合格までの88マイル</span></h1>
+      <small>DESTINATION: 2027 SPRING</small>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button role="tab" id="tab-timeline" data-view="timeline">年表</button>
+      <button role="tab" id="tab-glossary" data-view="glossary">用語集</button>
+      <button role="tab" id="tab-quiz" data-view="quiz">クイズ</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- 年表 -->
+  <section id="view-timeline" hidden>
+    <h2>年表</h2>
+    <p class="lead">物語の出来事を、時代の古い順に並べています。日付の色は作品ごと（赤＝PART1、緑＝PART2、黄＝PART3、灰＝現実の出来事）。</p>
+    <div class="chips" id="film-filter">
+      <button class="chip" data-film="all" aria-pressed="true">すべて</button>
+      <button class="chip" data-film="1" aria-pressed="false">PART1</button>
+      <button class="chip" data-film="2" aria-pressed="false">PART2</button>
+      <button class="chip" data-film="3" aria-pressed="false">PART3</button>
+      <button class="chip" data-film="real" aria-pressed="false">現実</button>
+    </div>
+    <div id="timeline"></div>
+  </section>
+
+  <!-- 用語集 -->
+  <section id="view-glossary" hidden>
+    <h2>用語集</h2>
+    <p class="lead">道具・場所・人物・セリフをまとめました。キーワードで絞り込めます。</p>
+    <input class="search" id="glossary-search" type="search" placeholder="例：ドク、1885、渓谷">
+    <div class="chips" id="cat-filter"></div>
+    <div class="terms" id="terms"></div>
+  </section>
+
+  <!-- クイズ -->
+  <section id="view-quiz" hidden>
+    <div id="quiz"></div>
+  </section>
+</main>
+
+<script src="data.js"></script>
+<script>
+// ===== 共通 =====
+const $ = (s, root = document) => root.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch]));
+const store = {
+  get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+};
+
+// タブ切り替え（#timeline などのアドレスで直接開ける）
+const VIEWS = ["timeline", "glossary", "quiz"];
+function show(view) {
+  if (!VIEWS.includes(view)) view = "timeline";
+  VIEWS.forEach(v => {
+    $("#view-" + v).hidden = v !== view;
+    $("#tab-" + v).setAttribute("aria-selected", v === view);
+  });
+  if (location.hash !== "#" + view) history.replaceState(null, "", "#" + view);
+  window.scrollTo(0, 0);
+}
+document.querySelectorAll("nav.tabs button").forEach(b => b.addEventListener("click", () => show(b.dataset.view)));
+
+// ===== 年表の描画 =====
+function tcHTML(it) {
+  const seg = (val, label) => `<span class="seg"><b>${esc(val)}</b><i>${label}</i></span>`;
+  const time = `<span class="seg time${it.time ? "" : " off"}"><i>TIME</i><b>${esc(it.time || "--:-- --")}</b></span>`;
+  return `<div class="tc" data-film="${it.film}">${seg(it.mon, "MONTH")}${seg(it.day, "DAY")}${seg(it.year, "YEAR")}${time}</div>`;
+}
+const FILM_LABEL = { 1: "PART1", 2: "PART2", 3: "PART3", real: "現実" };
+// 「NOV / 12 / 1955 / 10:04 PM」を「1955年11月12日 午後10時04分」に変換する
+const MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+function jpDate(it) {
+  let s = it.year + "年";
+  const m = MONTHS.indexOf(it.mon);
+  if (m >= 0) s += (m + 1) + "月";
+  if (/^\d+$/.test(it.day)) s += Number(it.day) + "日";
+  if (!it.time) return `<span>${s}</span>`;
+  // 時刻は2行目に分けて表示する
+  const [hm, ap] = it.time.split(" ");
+  const [h, min] = hm.split(":");
+  return `<span>${s}</span><span class="t">${ap === "PM" ? "午後" : "午前"}${Number(h)}時${min}分</span>`;
+}
+function renderTimeline(filter = "all") {
+  $("#timeline").innerHTML = TIMELINE.map(group => {
+    const items = group.items.filter(it => filter === "all" || String(it.film) === filter);
+    if (!items.length) return "";
+    return `<h3 class="era">${esc(group.era)}</h3><div class="events">` + items.map(it => `
+      <article class="event" data-film="${it.film}">
+        <div class="head">
+          <div class="when">${tcHTML(it)}<div class="jp">${jpDate(it)}</div></div>
+          <p class="what"><span class="tag">${FILM_LABEL[it.film]}</span>${esc(it.what)}</p>
+        </div>
+        <p class="note detail">${esc(it.detail)}</p>
+      </article>`).join("") + `</div>`;
+  }).join("");
+}
+$("#film-filter").addEventListener("click", e => {
+  const b = e.target.closest(".chip"); if (!b) return;
+  document.querySelectorAll("#film-filter .chip").forEach(c => c.setAttribute("aria-pressed", c === b));
+  renderTimeline(b.dataset.film);
+});
+
+// ===== 用語集の描画 =====
+let glossCat = "すべて";
+const CATS = ["すべて", ...new Set(GLOSSARY.map(g => g.cat))];
+$("#cat-filter").innerHTML = CATS.map(c => `<button class="chip" data-cat="${esc(c)}" aria-pressed="${c === glossCat}">${esc(c)}</button>`).join("");
+function renderGlossary() {
+  const word = $("#glossary-search").value.trim().toLowerCase();
+  const list = GLOSSARY.filter(g =>
+    (glossCat === "すべて" || g.cat === glossCat) &&
+    (!word || (g.term + g.en + g.desc).toLowerCase().includes(word)));
+  $("#terms").innerHTML = list.length
+    ? list.map(g => `<article class="term"><h4>${esc(g.term)}</h4><div class="en">${esc(g.en)}</div><p>${esc(g.desc)}</p></article>`).join("")
+    : `<p class="empty">「${esc(word)}」に当てはまる用語はありません。別の言葉で探してみてください。</p>`;
+}
+$("#glossary-search").addEventListener("input", renderGlossary);
+$("#cat-filter").addEventListener("click", e => {
+  const b = e.target.closest(".chip"); if (!b) return;
+  glossCat = b.dataset.cat;
+  document.querySelectorAll("#cat-filter .chip").forEach(c => c.setAttribute("aria-pressed", c === b));
+  renderGlossary();
+});
+
+// ===== クイズ =====
+const shuffle = arr => { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+let game = null; // { level, list, index, score, missed }
+
+// 1回に解く問題数（0は全問）と、苦手な問題（間違えた問題文の一覧）はブラウザに保存する
+let qCount = store.get("bttf-count") ?? 10;
+const ALL_Q = Object.values(QUIZ).flatMap(l => l.q);
+const getWeak = () => store.get("bttf-weak") || [];
+function setWeak(text, wrong) {
+  const weak = getWeak().filter(t => t !== text);
+  if (wrong) weak.push(text);
+  store.set("bttf-weak", weak);
+}
+
+function quizMenu() {
+  const best = store.get("bttf-best") || {};
+  const weak = getWeak();
+  const card = (key, name, meta) => `
+    <button class="level" data-level="${key}">
+      <span class="name">${name}</span>
+      <span class="meta">${meta}</span>
+      <span class="best">BEST ${best[key] != null ? esc(best[key]) : "--"}</span>
+    </button>`;
+  const counts = [[10, "10問"], [25, "25問"], [0, "全問"]];
+  $("#quiz").innerHTML = `
+    <h2>クイズ</h2>
+    <p class="lead">問題数とレベルを選んでください。出題順と選択肢の順番は毎回入れ替わります。</p>
+    <div class="chips" id="count-filter">
+      ${counts.map(([n, label]) => `<button class="chip" data-count="${n}" aria-pressed="${n === qCount}">${label}</button>`).join("")}
+    </div>
+    <div class="levels">
+      ${Object.entries(QUIZ).map(([k, l]) => card(k, l.name, `${l.meta}・全${l.q.length}問`)).join("")}
+      ${card("mix", "ランダム", `全レベルから出題・全${ALL_Q.length}問`)}
+      ${weak.length ? card("weak", "苦手を復習", `間違えたままの${weak.length}問。正解すると消えます`) : ""}
+    </div>
+    <p class="note" style="margin-top:16px">BESTは「正解数 / 問題数」です。</p>`;
+}
+function startQuiz(level) {
+  let pool;
+  if (level === "mix") pool = ALL_Q;
+  else if (level === "weak") pool = ALL_Q.filter(x => getWeak().includes(x.q));
+  else pool = QUIZ[level].q;
+  let list = shuffle(pool);
+  if (qCount) list = list.slice(0, qCount);
+  if (!list.length) return quizMenu();
+  game = { level, list, index: 0, score: 0, missed: [] };
+  renderQuestion();
+}
+function renderQuestion() {
+  const { list, index } = game;
+  const item = list[index];
+  const choices = shuffle(item.c.map((text, i) => ({ text, ok: i === 0 })));
+  $("#quiz").innerHTML = `
+    <div class="qhead">
+      <span class="progress">Q${String(index + 1).padStart(2, "0")} / ${String(list.length).padStart(2, "0")}</span>
+      <button class="btn ghost" id="quit">やめる</button>
+    </div>
+    <div class="bar"><div style="width:${(index / list.length) * 100}%"></div></div>
+    <p class="question">${esc(item.q)}</p>
+    <div class="choices">${choices.map((c, i) => `<button class="choice" data-i="${i}">${esc(c.text)}</button>`).join("")}</div>
+    <div id="after"></div>`;
+  $("#quit").addEventListener("click", quizMenu);
+  document.querySelectorAll(".choice").forEach(btn => btn.addEventListener("click", () => {
+    const picked = choices[btn.dataset.i];
+    const right = choices.find(c => c.ok);
+    document.querySelectorAll(".choice").forEach((b, i) => {
+      b.disabled = true;
+      if (choices[i].ok) b.classList.add("correct");
+    });
+    setWeak(item.q, !picked.ok);
+    if (picked.ok) game.score++;
+    else { btn.classList.add("wrong"); game.missed.push({ q: item.q, a: right.text, e: item.e }); }
+    const last = index === list.length - 1;
+    $("#after").innerHTML = `
+      <div class="explain">
+        <p class="judge ${picked.ok ? "ok" : "ng"}">${picked.ok ? "正解！" : "不正解：正解は「" + esc(right.text) + "」"}</p>
+        <p>${esc(item.e)}</p>
+      </div>
+      <div class="next"><button class="btn" id="next">${last ? "結果を見る" : "次の問題"}</button></div>`;
+    $("#next").focus();
+    $("#next").addEventListener("click", () => {
+      if (last) renderResult(); else { game.index++; renderQuestion(); }
+    });
+  }));
+}
+function renderResult() {
+  const { score, list, missed, level } = game;
+  const best = store.get("bttf-best") || {};
+  // 正解率で比べて、良ければ「正解数 / 問題数」で記録する
+  const prev = typeof best[level] === "string" ? best[level].split(" / ").map(Number) : null;
+  if (level !== "weak" && (!prev || score / list.length > prev[0] / prev[1])) {
+    best[level] = `${score} / ${list.length}`; store.set("bttf-best", best);
+  }
+  const rate = score / list.length;
+  const msg = rate === 1 ? "満点！ 88マイル到達です。" : rate >= 0.8 ? "あと少しで満点。間違えた問題を見直しましょう。" : rate >= 0.5 ? "半分以上正解。年表と用語集で復習を。" : "まずは年表と用語集で基礎を固めましょう。";
+  $("#quiz").innerHTML = `
+    <div class="result">
+      <h2>結果</h2>
+      <div class="score">${score} / ${list.length}</div>
+      <p>${msg}</p>
+      <div class="row">
+        <button class="btn" id="again">もう一度</button>
+        <button class="btn ghost" id="menu">レベル選択へ</button>
+      </div>
+    </div>
+    ${missed.length ? `<h3 class="era">間違えた問題</h3><div class="review">${missed.map(m => `
+      <div class="item"><p><b>${esc(m.q)}</b></p><p>正解：${esc(m.a)}</p><p class="note">${esc(m.e)}</p></div>`).join("")}</div>` : ""}`;
+  $("#again").addEventListener("click", () => startQuiz(level));
+  $("#menu").addEventListener("click", quizMenu);
+}
+$("#quiz").addEventListener("click", e => {
+  const c = e.target.closest("#count-filter .chip");
+  if (c) { qCount = Number(c.dataset.count); store.set("bttf-count", qCount); return quizMenu(); }
+  const b = e.target.closest(".level"); if (b) startQuiz(b.dataset.level);
+});
+
+// ===== 起動 =====
+renderTimeline();
+renderGlossary();
+quizMenu();
+show(location.hash.slice(1));
+
+// オフラインでも開けるように、サービスワーカー（sw.js）を登録する
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js").catch(() => {});
+}
+</script>
+</body>
+</html>

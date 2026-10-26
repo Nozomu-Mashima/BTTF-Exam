@@ -1,0 +1,17 @@
+{
+  "name": "BTTF検定 合格までの88マイル",
+  "short_name": "88マイル",
+  "description": "バック・トゥ・ザ・フューチャー検定の対策アプリ。年表・用語集121語・クイズ150問。",
+  "lang": "ja",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f2f4f7",
+  "theme_color": "#14171c",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
