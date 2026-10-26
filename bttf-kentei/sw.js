@@ -1,7 +1,7 @@
 // サービスワーカー：一度開いたら、電波がなくてもアプリを開けるようにする仕組み。
 // 中身（index.html や data.js）を更新したら、CACHE_NAME の番号を1つ上げてください。
 // 番号が変わると、古い保存データが捨てられて新しい中身に入れ替わります。
-const CACHE_NAME = "bttf88-v2";
+const CACHE_NAME = "bttf88-v3";
 
 // 最初に保存しておくファイル
 const APP_FILES = [

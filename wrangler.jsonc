@@ -1,0 +1,6 @@
+{
+  // Cloudflare に「どのフォルダを公開するか」を伝える設定ファイル
+  "name": "bttf-exam",
+  "compatibility_date": "2026-10-01",
+  "assets": { "directory": "./bttf-kentei" }
+}
